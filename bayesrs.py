@@ -18,7 +18,7 @@ st.title("Posterior de Bayes: estilo histórico vs moderno")
 # Mostrar ecuaciones en LaTeX
 st.subheader("Ecuaciones")
 st.latex(r"""
-\text{Versión histórica (discretizada, estilo Bayes 1763| \\ An Essay towards Solving a Problem in the Doctrine of Chances):} \quad
+\text{Versión histórica (Bayes 1763|An Essay towards Solving a Problem in the Doctrine of Chances):} \quad
 P(x_i \mid D) = \frac{x_i^p (1-x_i)^q}{\sum_j x_j^p (1-x_j)^q}
 """)
 st.latex(r"""
