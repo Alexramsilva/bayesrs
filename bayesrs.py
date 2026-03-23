@@ -7,19 +7,78 @@ Original file is located at
     https://colab.research.google.com/drive/16uj8LbvbxnSymGCvVz0hu6RzFRoTahxH
 """
 import streamlit as st
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import beta
 
 st.title("Posterior de Bayes: estilo histórico vs moderno")
 
-# Versión histórica en LaTeX
-st.subheader("Versión histórica (discretizada)")
-
+# Mostrar ecuaciones en LaTeX
+st.subheader("Ecuaciones")
 st.latex(r"""
+\text{Versión histórica (discretizada, estilo Bayes 1763):} \quad
 P(x_i \mid D) = \frac{x_i^p (1-x_i)^q}{\sum_j x_j^p (1-x_j)^q}
 """)
-
-# Versión moderna en LaTeX
-st.subheader("Versión moderna (continua, Teorema de Bayes)")
-
 st.latex(r"""
+\text{Versión moderna (continua, Teorema de Bayes):} \quad
 P(x \mid D) = \frac{P(D \mid x) P(x)}{\int_0^1 P(D \mid x) P(x) dx}
 """)
+
+# Entradas de usuario
+p = st.number_input("Número de éxitos (p)", min_value=0, value=7, step=1)
+q = st.number_input("Número de fracasos (q)", min_value=0, value=3, step=1)
+intervalos = st.number_input("Número de intervalos para discretización", min_value=2, value=10, step=1)
+
+# -------------------------
+# Posterior discreta (histórica)
+# -------------------------
+x_values = np.linspace(0, 1, intervalos + 1)
+f_values = x_values**p * (1 - x_values)**q
+posterior_prob = f_values / np.sum(f_values)
+
+# Tabla
+tabla = pd.DataFrame({
+    "x_i": x_values.round(2),
+    "x_i^p*(1-x_i)^q": f_values.round(6),
+    "P(x_i | D)": posterior_prob.round(4)
+})
+
+st.subheader("Posterior discreta (estilo histórico)")
+st.dataframe(tabla)
+
+# Gráfica discreta
+fig, ax = plt.subplots()
+ax.bar(x_values, posterior_prob, width=0.05, color='skyblue', edgecolor='black')
+ax.set_xlabel("x_i")
+ax.set_ylabel("Probabilidad aproximada")
+ax.set_title(f"Posterior discreta (p={p}, q={q})")
+st.pyplot(fig)
+
+# Probabilidad aproximada para un valor específico
+x_val = st.slider("Selecciona x para ver P(x_i | D)", 0.0, 1.0, 0.7, 0.01)
+idx = (np.abs(x_values - x_val)).argmin()
+st.write(f"Probabilidad aproximada para x ≈ {x_values[idx]:.2f}: {posterior_prob[idx]:.4f}")
+
+# -------------------------
+# Posterior continua (moderna)
+# -------------------------
+st.subheader("Posterior continua (Beta, versión moderna)")
+alpha = p + 1
+beta_param = q + 1
+x_cont = np.linspace(0,1,500)
+posterior_cont = beta.pdf(x_cont, alpha, beta_param)
+
+# Densidad para el valor seleccionado
+densidad_x = beta.pdf(x_val, alpha, beta_param)
+st.write(f"Densidad Beta({alpha},{beta_param}) en x={x_val:.2f}: {densidad_x:.4f}")
+
+# Gráfica continua
+fig2, ax2 = plt.subplots()
+ax2.plot(x_cont, posterior_cont, label=f'Beta({alpha},{beta_param})')
+ax2.axvline(x_val, color='red', linestyle='--', label=f'x = {x_val:.2f}')
+ax2.fill_between(x_cont, posterior_cont, 0, where=(x_cont>=x_val), color='orange', alpha=0.3, label=f'Área x ≥ {x_val:.2f}')
+ax2.set_xlabel('x')
+ax2.set_ylabel('Densidad')
+ax2.legend()
+st.pyplot(fig2)
