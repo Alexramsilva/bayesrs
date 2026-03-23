@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import beta
 
 st.image("UNRC_IO.png", caption="Universidad Nacional Rosario Castellanos", width=300)
-st.title("Posterior de Bayes: estilo histórico vs moderno")
+st.title("Teorema de Bayes | An Essay towards Solving a Problem in the Doctrine of Chances")
 
 # Mostrar ecuaciones en LaTeX
 st.subheader("Ecuaciones")
