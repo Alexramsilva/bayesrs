@@ -12,6 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import beta
 
+st.image("UNRC_IO.png", caption="Universidad Nacional Rosario Castellanos", width=300)
 st.title("Posterior de Bayes: estilo histórico vs moderno")
 
 # Mostrar ecuaciones en LaTeX
